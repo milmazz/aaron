@@ -73,8 +73,6 @@ defmodule Aaron.Parser do
     |> parsec(:parse)
     |> unwrap_and_tag(:block_quote)
 
-  ignore_whitespace = ignore(whitespace)
-
   spacechar = utf8_char([@space, @tab])
   sp = optional(times(spacechar, min: 1))
 
@@ -114,25 +112,31 @@ defmodule Aaron.Parser do
     |> times(min: 1, max: 6)
     |> reduce(:length)
     |> unwrap_and_tag(:level)
-    |> ignore(utf8_char([@space]))
 
   atx_end =
     [@space]
     |> utf8_char()
     |> times(ascii_char([?#]), min: 1)
     |> concat(sp)
+    |> ascii_char([?\n])
 
   heading =
     atx_start
     |> choice([
       [?\n] |> ascii_char() |> ignore(),
-      lookahead_not(ascii_string([not: ?\n], min: 1), atx_end) |> reduce(:trim)
+      [@space]
+      |> utf8_char()
+      |> ignore()
+      # `lookahead_not` seems to work with string(" #"), but it should also accept `atx_end`, right?
+      |> repeat([not: ?\n] |> utf8_char() |> lookahead_not(string(" #")))
+      |> optional([not: ?\n, not: ?\s] |> utf8_char() |> ignore(atx_end))
+      |> optional(ascii_char([?\n]))
+      |> reduce({List, :to_string, []})
+      |> reduce(:trim)
     ])
-    # |> optional([not: ?\n] |> ascii_string(min: 1) |> reduce(:remove_extra_whitespace))
     |> tag(:heading)
-    |> ignore(optional(line_ending))
 
-  defp trim([line]), do: String.trim(line)
+  defp trim(line), do: line |> List.to_string() |> String.trim()
 
   block =
     choice([

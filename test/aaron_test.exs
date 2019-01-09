@@ -20,7 +20,9 @@ defmodule AaronTest do
 
   for %{"html" => html, "markdown" => markdown, "section" => section, "example" => example} <-
         spec_tests,
-      section in ["ATX headings", "Thematic breaks"] do
+      # TODO: Remove this filter
+      # section in ["ATX headings"] do
+      section in ["Thematic breaks"] do
     test "#{section}: #{example}" do
       assert Aaron.to_html(unquote(markdown)) == unquote(html)
     end
