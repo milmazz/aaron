@@ -18,29 +18,11 @@ defmodule Aaron.Formatters.HTML do
   end
 
   def to_html({:blockquote, {:code_block, code_block}}) do
-    ['<', 'blockquote', '>', to_html(code_block: code_block), '<', '/', 'blockquote', '>']
+    ['<blockquote>', to_html(code_block: code_block), '</blockquote>']
   end
 
   def to_html({:code_block, code_block}) do
-    [
-      '<',
-      'pre',
-      '>',
-      '<',
-      'code',
-      '>',
-      code_block,
-      '\n',
-      '<',
-      '/',
-      'code',
-      '>',
-      '<',
-      '/',
-      'pre',
-      '>',
-      '\n'
-    ]
+    ['<pre><code>', code_block, '\n</code></pre>\n']
   end
 
   def to_html({:heading, [level: level]}) do
@@ -48,11 +30,11 @@ defmodule Aaron.Formatters.HTML do
   end
 
   def to_html({:heading, [{:level, level} | title]}) do
-    ['<', 'h', level, '>', title, '<', '/', 'h', level, '>', '\n']
+    ['<h', level, '>', title, '</h', level, '>\n']
   end
 
   def to_html({:thematic_break, []}) do
-    ['<', 'hr', ' />', '\n']
+    ['<hr />\n']
   end
 
   def to_html(_) do

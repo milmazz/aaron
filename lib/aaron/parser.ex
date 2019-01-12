@@ -40,7 +40,7 @@ defmodule Aaron.Parser do
     ])
 
   # Whitespace is a sequence of one or more whitespace characters.
-  whitespace = times(whitespace_character, min: 1)
+  # whitespace = times(whitespace_character, min: 1)
 
   non_indented_space =
     [@space]
@@ -104,7 +104,7 @@ defmodule Aaron.Parser do
   # 0-3 spaces. The raw contents of the heading are stripped of leading and
   # trailing spaces before being parsed as inline content. The heading level is
   # equal to the number of # characters in the opening sequence.
-  atx_start =
+  atx_prefix =
     non_indented_space
     |> optional()
     |> ignore()
@@ -113,25 +113,34 @@ defmodule Aaron.Parser do
     |> reduce(:length)
     |> unwrap_and_tag(:level)
 
-  atx_end =
-    [@space]
-    |> utf8_char()
+  atx_suffix =
+    [?\s]
+    |> ascii_string(min: 1)
     |> times(ascii_char([?#]), min: 1)
     |> concat(sp)
-    |> ascii_char([?\n])
+    |> ignore()
+
+  atx_end = [ascii_char([?\n]), eos()] |> choice() |> ignore()
+
+  atx_content =
+    choice([
+      [?\\] |> ascii_char() |> ignore() |> ascii_char([?#]),
+      ascii_char(not: ?\n)
+    ])
 
   heading =
-    atx_start
+    atx_prefix
     |> choice([
-      [?\n] |> ascii_char() |> ignore(),
-      [@space]
-      |> utf8_char()
+      atx_end,
+      [?\s]
+      |> ascii_string(min: 1)
       |> ignore()
-      # `lookahead_not` seems to work with string(" #"), but it should also accept `atx_end`, right?
-      |> repeat([not: ?\n] |> utf8_char() |> lookahead_not(string(" #")))
-      |> optional([not: ?\n, not: ?\s] |> utf8_char() |> ignore(atx_end))
-      |> optional(ascii_char([?\n]))
-      |> reduce({List, :to_string, []})
+      |> repeat(" #" |> string() |> lookahead_not() |> concat(atx_content))
+      |> choice([
+        atx_end,
+        concat(atx_suffix, atx_end),
+        atx_content |> times(min: 1) |> concat(atx_end)
+      ])
       |> reduce(:trim)
     ])
     |> tag(:heading)
@@ -140,7 +149,6 @@ defmodule Aaron.Parser do
 
   block =
     choice([
-      # ignore_whitespace,
       block_quote,
       thematic_break,
       code_block,
