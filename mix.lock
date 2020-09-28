@@ -1,4 +1,4 @@
 %{
   "jason": {:hex, :jason, "1.1.2", "b03dedea67a99223a2eaf9f1264ce37154564de899fd3d8b9a21b1a6fd64afe7", [:mix], [{:decimal, "~> 1.0", [hex: :decimal, repo: "hexpm", optional: true]}], "hexpm", "fdf843bca858203ae1de16da2ee206f53416bbda5dc8c9e78f43243de4bc3afe"},
-  "nimble_parsec": {:hex, :nimble_parsec, "0.6.0", "32111b3bf39137144abd7ba1cce0914533b2d16ef35e8abc5ec8be6122944263", [:mix], [], "hexpm", "27eac315a94909d4dc68bc07a4a83e06c8379237c5ea528a9acff4ca1c873c52"},
+  "nimble_parsec": {:hex, :nimble_parsec, "1.0.0", "54840f7a89aa3443c9280056742c329259d02787ef1da651f8591706518ceec6", [:mix], [], "hexpm", "6611313377408b6f19d4eddb1a53a342c70e336a21e9d09c38a9230775f1150d"},
 }
