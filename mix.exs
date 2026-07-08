@@ -22,8 +22,8 @@ defmodule Aaron.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:nimble_parsec, "~> 0.5"},
-      {:jason, ">= 0.0.0", only: [:dev, :test]}
+      {:nimble_parsec, "~> 1.0"},
+      {:jason, "~> 1.4", only: [:dev, :test]}
     ]
   end
 end

@@ -14,7 +14,7 @@ defmodule Aaron.Parser do
 
   # A line ending is a newline (U+000A), a carriage return (U+000D) not
   # followed by a newline, or a carriage return and a following newline.
-  line_ending =
+  _line_ending =
     choice([
       utf8_char([@newline]),
       [@carriage_return] |> utf8_char() |> optional(utf8_char([@newline]))
@@ -22,14 +22,14 @@ defmodule Aaron.Parser do
 
   # A line containing no characters, or a line containing only spaces (U+0020)
   # or tabs (U+0009), is called a blank line.
-  blank_line =
+  _blank_line =
     [@space, @tab]
     |> utf8_char()
     |> times(min: 1)
 
   # A whitespace character is a space (U+0020), tab (U+0009), newline (U+000A),
   # line tabulation (U+000B), form feed (U+000C), or carriage return (U+000D).
-  whitespace_character =
+  _whitespace_character =
     utf8_char([
       @space,
       @tab,
